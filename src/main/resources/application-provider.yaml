@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: yu-rpc-provider
+  main:
+    web-application-type: none
+
+server:
+  port: 0
+
+grpc:
+  server:
+    port: 9091
+    reflection-service-enabled: true
+
+rpc:
+  registry-config:
+    registry: local # override via RPC_REGISTRY_CONFIG_REGISTRY (e.g. etcd / zookeeper)
+    # registry: etcd
+    # registry: zookeeper
+  telemetry:
+    enabled: true
+    metrics-enabled: true
+    metrics-exporter: prometheus
+    metrics-port: 9404
+    tracing-enabled: true
+    tracing-exporter: logging
+

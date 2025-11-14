@@ -5,6 +5,7 @@ import com.yupi.yurpc.fault.tolerant.TolerantStrategyKeys;
 import com.yupi.yurpc.loadbalancer.LoadBalancerKeys;
 import com.yupi.yurpc.serializer.SerializerKeys;
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * RPC 框架全局配置
@@ -14,6 +15,7 @@ import lombok.Data;
  * @from <a href="https://yupi.icu">编程导航学习圈</a>
  */
 @Data
+@ConfigurationProperties(prefix = "rpc")
 public class RpcConfig {
 
     /**
@@ -65,4 +67,9 @@ public class RpcConfig {
      * 注册中心配置
      */
     private RegistryConfig registryConfig = new RegistryConfig();
+
+    /**
+     * 可观测性配置
+     */
+    private TelemetryConfig telemetry = new TelemetryConfig();
 }

@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: yurpc-client-demo
+  namespace: yurpc
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: client
+          image: yurpc/yu-rpc-core:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: client
+            - name: GRPC_CLIENT_RECOMMENDATIONSERVICE_ADDRESS
+              value: static://yurpc-provider:9091
+            - name: GRPC_CLIENT_USERSERVICE_ADDRESS
+              value: static://yurpc-provider:9091
+            - name: GRPC_CLIENT_CALCSERVICE_ADDRESS
+              value: static://yurpc-provider:9091
+            - name: RPC_TELEMETRY_ENABLED
+              value: "false"
+  backoffLimit: 0
+
+

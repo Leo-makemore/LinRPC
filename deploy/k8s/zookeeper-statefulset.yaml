@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: yurpc-zookeeper
+  namespace: yurpc
+labels:
+  app: yurpc-zookeeper
+spec:
+  ports:
+    - name: client
+      port: 2181
+      targetPort: 2181
+  clusterIP: None
+  selector:
+    app: yurpc-zookeeper
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: yurpc-zookeeper
+  namespace: yurpc
+  labels:
+    app: yurpc-zookeeper
+spec:
+  serviceName: yurpc-zookeeper
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yurpc-zookeeper
+  template:
+    metadata:
+      labels:
+        app: yurpc-zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: bitnami/zookeeper:3.9.1
+          env:
+            - name: ZOO_ENABLE_AUTH
+              value: "no"
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: "yes"
+          ports:
+            - containerPort: 2181
+              name: client
+          readinessProbe:
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "echo ruok | nc 127.0.0.1 2181 | grep imok"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/zookeeper
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+
+

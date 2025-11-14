@@ -34,12 +34,28 @@ public class ConfigUtils {
      * @return
      */
     public static <T> T loadConfig(Class<T> tClass, String prefix, String environment) {
+        String resolvedEnvironment = environment;
+        if (StrUtil.isBlank(resolvedEnvironment)) {
+            resolvedEnvironment = System.getProperty(prefix + ".env");
+        }
+        if (StrUtil.isBlank(resolvedEnvironment)) {
+            resolvedEnvironment = System.getenv(prefix.toUpperCase() + "_ENV");
+        }
+
         StringBuilder configFileBuilder = new StringBuilder("application");
-        if (StrUtil.isNotBlank(environment)) {
-            configFileBuilder.append("-").append(environment);
+        if (StrUtil.isNotBlank(resolvedEnvironment)) {
+            configFileBuilder.append("-").append(resolvedEnvironment);
         }
         configFileBuilder.append(".properties");
         Props props = new Props(configFileBuilder.toString());
+        System.getProperties().forEach((key, value) -> {
+            if (key instanceof String && value instanceof String) {
+                String keyStr = (String) key;
+                if (keyStr.startsWith(prefix + ".")) {
+                    props.setProperty(keyStr, (String) value);
+                }
+            }
+        });
         return props.toBean(tClass, prefix);
     }
 }

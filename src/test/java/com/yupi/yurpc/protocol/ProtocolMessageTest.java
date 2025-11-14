@@ -4,8 +4,8 @@ import cn.hutool.core.util.IdUtil;
 import com.yupi.yurpc.constant.RpcConstant;
 import com.yupi.yurpc.model.RpcRequest;
 import io.vertx.core.buffer.Buffer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -41,7 +41,7 @@ public class ProtocolMessageTest {
 
         Buffer encodeBuffer = ProtocolMessageEncoder.encode(protocolMessage);
         ProtocolMessage<?> message = ProtocolMessageDecoder.decode(encodeBuffer);
-        Assert.assertNotNull(message);
+        Assertions.assertNotNull(message);
     }
 
 }

@@ -20,6 +20,8 @@ import com.yupi.yurpc.registry.RegistryFactory;
 import com.yupi.yurpc.serializer.Serializer;
 import com.yupi.yurpc.serializer.SerializerFactory;
 import com.yupi.yurpc.server.tcp.VertxTcpClient;
+import com.yupi.yurpc.telemetry.TelemetryContext;
+import com.yupi.yurpc.telemetry.TelemetryManager;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -82,14 +84,37 @@ public class ServiceProxy implements InvocationHandler {
         try {
             RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
             rpcResponse = retryStrategy.doRetry(() ->
-                    VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
+                    invokeWithTelemetry(serviceName, method, rpcRequest, selectedServiceMetaInfo)
             );
         } catch (Exception e) {
             // 容错机制
             TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
             rpcResponse = tolerantStrategy.doTolerant(null, e);
         }
-        return rpcResponse.getData();
+        return rpcResponse != null ? rpcResponse.getData() : null;
+    }
+
+    /**
+     * 发起 RPC 请求并记录可观测性指标
+     *
+     * @param serviceName
+     * @param method
+     * @param rpcRequest
+     * @param serviceMetaInfo
+     * @return
+     * @throws Exception
+     */
+    private RpcResponse invokeWithTelemetry(String serviceName, Method method, RpcRequest rpcRequest,
+                                            ServiceMetaInfo serviceMetaInfo) throws Exception {
+        TelemetryContext telemetryContext = TelemetryManager.startClientTelemetry(serviceName, method.getName());
+        try {
+            RpcResponse response = VertxTcpClient.doRequest(rpcRequest, serviceMetaInfo);
+            TelemetryManager.finishTelemetry(telemetryContext, true, null);
+            return response;
+        } catch (Exception e) {
+            TelemetryManager.finishTelemetry(telemetryContext, false, e);
+            throw e;
+        }
     }
 
     /**

@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: yu-rpc-gateway
+
+server:
+  port: 8080
+
+grpc:
+  client:
+    userService:
+      address: static://localhost:9091
+      negotiation-type: plaintext
+    recommendationService:
+      address: static://localhost:9091
+      negotiation-type: plaintext
+    calcService:
+      address: static://localhost:9091
+      negotiation-type: plaintext
+
+rpc:
+  telemetry:
+    enabled: true
+    metrics-enabled: true
+    metrics-exporter: prometheus
+    metrics-port: 9406
+    tracing-enabled: true
+    tracing-exporter: logging
+
+

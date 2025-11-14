@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yurpc-gateway
+  namespace: yurpc
+  labels:
+    app: yurpc-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yurpc-gateway
+  template:
+    metadata:
+      labels:
+        app: yurpc-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: yurpc/yu-rpc-core:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: gateway
+            - name: GRPC_CLIENT_USERSERVICE_ADDRESS
+              value: static://yurpc-provider:9091
+            - name: GRPC_CLIENT_RECOMMENDATIONSERVICE_ADDRESS
+              value: static://yurpc-provider:9091
+            - name: GRPC_CLIENT_CALCSERVICE_ADDRESS
+              value: static://yurpc-provider:9091
+            - name: RPC_TELEMETRY_ENABLED
+              value: "true"
+            - name: RPC_TELEMETRY_METRICS_EXPORTER
+              value: prometheus
+            - name: RPC_TELEMETRY_METRICS_PORT
+              value: "9406"
+            - name: RPC_TELEMETRY_TRACING_EXPORTER
+              value: logging
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9406
+              name: metrics
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yurpc-gateway
+  namespace: yurpc
+  labels:
+    app: yurpc-gateway
+spec:
+  selector:
+    app: yurpc-gateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+    - name: metrics
+      port: 9406
+      targetPort: 9406
+  type: LoadBalancer
+
+

@@ -9,6 +9,8 @@ package com.yupi.yurpc.registry;
  */
 public interface RegistryKeys {
 
+    String LOCAL = "local";
+
     String ETCD = "etcd";
 
     String ZOOKEEPER = "zookeeper";

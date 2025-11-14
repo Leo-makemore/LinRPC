@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.yupi.yurpc.grpc.proto";
+option java_outer_classname = "UserServiceProto";
+
+package yurpc;
+
+service UserService {
+  rpc GetUserName(UserRequest) returns (UserNameResponse);
+  rpc GetUserCount(Empty) returns (UserCountResponse);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (OperationStatus);
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  rpc ToggleUserActive(ToggleUserActiveRequest) returns (OperationStatus);
+}
+
+service RecommendationService {
+  rpc GetRecommendations(RecommendationRequest) returns (RecommendationResponse);
+}
+
+service CalcService {
+  rpc Compute(ComputeRequest) returns (ComputeResponse);
+}
+
+message StrategySnapshot {
+  string serializer = 1;
+  string loadBalancer = 2;
+  string retryStrategy = 3;
+  string tolerantStrategy = 4;
+}
+
+message ResponseMetadata {
+  StrategySnapshot strategy = 1;
+  string timestamp = 2;
+}
+
+message UserRequest {
+  int64 userId = 1;
+}
+
+message UserNameResponse {
+  string userName = 1;
+  ResponseMetadata metadata = 2;
+}
+
+message UserCountResponse {
+  int32 count = 1;
+  ResponseMetadata metadata = 2;
+}
+
+message Empty {}
+
+message CreateUserRequest {
+  string name = 1;
+  int32 age = 2;
+}
+
+message CreateUserResponse {
+  int64 userId = 1;
+  ResponseMetadata metadata = 2;
+}
+
+message DeleteUserRequest {
+  int64 userId = 1;
+}
+
+message ToggleUserActiveRequest {
+  int64 userId = 1;
+  bool active = 2;
+}
+
+message ListUsersRequest {
+  int32 limit = 1;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+  ResponseMetadata metadata = 2;
+}
+
+message User {
+  int64 userId = 1;
+  string name = 2;
+  int32 age = 3;
+  bool active = 4;
+}
+
+message OperationStatus {
+  bool success = 1;
+  string message = 2;
+  ResponseMetadata metadata = 3;
+}
+
+message RecommendationRequest {
+  int64 userId = 1;
+  int32 limit = 2;
+}
+
+message RecommendationResponse {
+  repeated RecommendationItem items = 1;
+  ResponseMetadata metadata = 2;
+}
+
+message RecommendationItem {
+  string title = 1;
+  string category = 2;
+  double score = 3;
+}
+
+message ComputeRequest {
+  double left = 1;
+  double right = 2;
+  string operator = 3;
+}
+
+message ComputeResponse {
+  double result = 1;
+  ResponseMetadata metadata = 2;
+}
+

@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: yu-rpc-client
+  main:
+    web-application-type: none
+
+grpc:
+  client:
+    userService:
+      address: static://localhost:9091
+      negotiation-type: plaintext
+    recommendationService:
+      address: static://localhost:9091
+      negotiation-type: plaintext
+    calcService:
+      address: static://localhost:9091
+      negotiation-type: plaintext
+
+rpc:
+  registry-config:
+    registry: local # override with RPC_REGISTRY_CONFIG_REGISTRY / ADDRESS when using Etcd or ZooKeeper
+  telemetry:
+    enabled: true
+    metrics-enabled: true
+    metrics-exporter: prometheus
+    metrics-port: 9405
+    tracing-enabled: true
+    tracing-exporter: logging
+

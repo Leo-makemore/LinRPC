@@ -1,8 +1,8 @@
 package com.yupi.yurpc.loadbalancer;
 
 import com.yupi.yurpc.model.ServiceMetaInfo;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,12 +40,12 @@ public class LoadBalancerTest {
         // 连续调用 3 次
         ServiceMetaInfo serviceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
         System.out.println(serviceMetaInfo);
-        Assert.assertNotNull(serviceMetaInfo);
+        Assertions.assertNotNull(serviceMetaInfo);
         serviceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
         System.out.println(serviceMetaInfo);
-        Assert.assertNotNull(serviceMetaInfo);
+        Assertions.assertNotNull(serviceMetaInfo);
         serviceMetaInfo = loadBalancer.select(requestParams, serviceMetaInfoList);
         System.out.println(serviceMetaInfo);
-        Assert.assertNotNull(serviceMetaInfo);
+        Assertions.assertNotNull(serviceMetaInfo);
     }
 }
